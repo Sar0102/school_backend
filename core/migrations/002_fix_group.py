@@ -51,7 +51,9 @@ def create_groups(apps, schema_editor):
     student_permissions = Permission.objects.filter(
         content_type=grade_content_type, codename__startswith="view_"
     )
-    student_group.permissions.set(student_permissions, view_subject_permission)
+    student_group.permissions.set(student_permissions)
+
+    student_group.permissions.add(view_subject_permission) 
 
 
 class Migration(migrations.Migration):
