@@ -17,6 +17,18 @@ class User(AbstractUser):
     def __str__(self):
         return f"{self.username}"
 
+    def save(self, *args, **kwargs):
+        if self.role == "director":
+            self.is_staff = True
+            self.is_superuser = True
+        elif self.role == "teacher":
+            self.is_staff = True
+            self.is_superuser = False
+        else:
+            self.is_staff = False
+            self.is_superuser = False
+        super(User, self).save(*args, **kwargs)
+
 
 class Group(models.Model):
     name = models.CharField(max_length=100)
@@ -27,7 +39,7 @@ class Group(models.Model):
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.full_name}"

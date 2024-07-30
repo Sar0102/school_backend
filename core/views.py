@@ -1,16 +1,59 @@
 from django.db.models import Avg, F, Value
 from django.db.models.functions import Concat
+from rest_framework import viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Grade
 from .models import Group
 from .models import Group as StudentGroup
-from .models import Student
-from .permissions import IsDirector, IsTeacherOrDirector
-from .serializers import GroupSerializer, StudentSerializer
+from .models import Student, Subject, User
+from .permissions import IsDirector, IsTeacher, IsTeacherOrDirector
+from .serializers import (
+    GradeSerializer,
+    GroupSerializer,
+    StudentSerializer,
+    SubjectSerializer,
+    UserSerializer,
+)
+
+
+class GroupViewSet(viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsDirector]
+
+
+class StudentViewSet(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsDirector]
+
+
+class SubjectViewSet(viewsets.ModelViewSet):
+    queryset = Subject.objects.all()
+    serializer_class = SubjectSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsDirector]
+
+
+class GradeViewSet(viewsets.ModelViewSet):
+    queryset = Grade.objects.all()
+    serializer_class = GradeSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsTeacher]
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsDirector]
 
 
 class GroupListView(ListAPIView):

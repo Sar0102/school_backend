@@ -1,7 +1,9 @@
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.db.models.signals import post_migrate
+from django.db.models.signals import post_migrate, post_save
 from django.dispatch import receiver
+
+from core.models import Student, User
 
 
 @receiver(post_migrate)
@@ -65,3 +67,9 @@ def create_groups(sender, **kwargs):
     if student_group.permissions.count() == 0:
         student_group.permissions.set(student_permissions)
         student_group.permissions.add(view_subject_permission)
+
+
+@receiver(post_save, sender=User)
+def create_student_profile(sender, instance, created, **kwargs):
+    if created and instance.role == "student":
+        Student.objects.create(user=instance)
